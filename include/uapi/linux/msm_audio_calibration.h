@@ -74,6 +74,8 @@ enum {
 	AFE_TOPOLOGY_CAL_TYPE,
 	AFE_CUST_TOPOLOGY_CAL_TYPE,
 
+	LSM_CUST_TOPOLOGY_CAL_TYPE,
+	LSM_TOPOLOGY_CAL_TYPE,
 	LSM_CAL_TYPE,
 
 	ADM_RTAC_INFO_CAL_TYPE,
@@ -297,6 +299,13 @@ struct audio_cal_info_sidetone {
 	int32_t		pid;
 };
 
+struct audio_cal_info_lsm_top {
+	int32_t		topology;
+	int32_t		acdb_id;
+	int32_t		app_type;
+};
+
+
 struct audio_cal_info_lsm {
 	int32_t		acdb_id;
 	/* RX_DEVICE or TX_DEVICE */
@@ -501,6 +510,17 @@ struct audio_cal_type_sidetone {
 struct audio_cal_sidetone {
 	struct audio_cal_header			hdr;
 	struct audio_cal_type_sidetone		cal_type;
+};
+
+struct audio_cal_type_lsm_top {
+	struct audio_cal_type_header	cal_hdr;
+	struct audio_cal_data		cal_data;
+	struct audio_cal_info_lsm_top	cal_info;
+};
+
+struct audio_cal_lsm_top {
+	struct audio_cal_header		hdr;
+	struct audio_cal_type_lsm_top	cal_type;
 };
 
 struct audio_cal_type_lsm {
