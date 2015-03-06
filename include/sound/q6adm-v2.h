@@ -40,6 +40,17 @@ enum {
 	ADM_MAX_CAL_TYPES
 };
 
+enum {
+	ADM_MEM_MAP_INDEX_SOURCE_TRACKING = ADM_MAX_CAL_TYPES,
+	ADM_MEM_MAP_INDEX_MAX
+};
+
+enum {
+	ADM_CLIENT_ID_DEFAULT = 0,
+	ADM_CLIENT_ID_SOURCE_TRACKING,
+	ADM_CLIENT_ID_MAX,
+};
+
 #define MAX_COPPS_PER_PORT 0x8
 #define ADM_MAX_CHANNELS 8
 
@@ -143,4 +154,10 @@ int programable_channel_mixer(int port_id, int copp_idx, int session_id,
 		int num_ch);
 
 
+int adm_set_sound_focus(int port_id, int copp_idx,
+			struct sound_focus_param soundFocusData);
+int adm_get_sound_focus(int port_id, int copp_idx,
+			struct sound_focus_param *soundFocusData);
+int adm_get_source_tracking(int port_id, int copp_idx,
+			    struct source_tracking_param *sourceTrackingData);
 #endif /* __Q6_ADM_V2_H__ */
