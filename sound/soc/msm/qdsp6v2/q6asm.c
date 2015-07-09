@@ -431,14 +431,6 @@ static void q6asm_session_free(struct audio_client *ac)
 	struct list_head		*ptr, *next;
 	struct asm_no_wait_node		*node;
 	unsigned long			flags;
-
-	pr_debug("%s: sessionid[%d]\n", __func__, ac->session);
-	rtac_remove_popp_from_adm_devices(ac->session);
-	session[ac->session] = 0;
-	ac->session = 0;
-	ac->perf_mode = LEGACY_PCM_MODE;
-	ac->fptr_cache_ops = NULL;
-
 	spin_lock_irqsave(&ac->no_wait_que_spinlock, flags);
 	list_for_each_safe(ptr, next, &ac->no_wait_que) {
 		node = list_entry(ptr, struct asm_no_wait_node, list);
@@ -446,6 +438,7 @@ static void q6asm_session_free(struct audio_client *ac)
 		kfree(node);
 	}
 	spin_unlock_irqrestore(&ac->no_wait_que_spinlock, flags);
+	list_del(&ac->no_wait_que);
 	return;
 }
 
@@ -1071,6 +1064,7 @@ struct audio_client *q6asm_audio_client_alloc(app_cb cb, void *priv)
 	ac->fptr_cache_ops = NULL;
 	/* DSP expects stream id from 1 */
 	ac->stream_id = 1;
+	INIT_LIST_HEAD(&ac->no_wait_que);
 	ac->apr = apr_register("ADSP", "ASM", \
 			(apr_fn)q6asm_callback,\
 			((ac->session) << 8 | 0x0001),\
