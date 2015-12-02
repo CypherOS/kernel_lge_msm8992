@@ -117,6 +117,13 @@ int sp_link_backlight_status;
 int sp_link_backlight_brightness;
 int sp_link_backlight_is_ready;
 #endif
+#define MDSS_BRIGHT_TO_BL_DIMMER(out, v) do {\
+					out = ((v) * (v) * 255  / 4095 + (v) * (255 - (v)) / 32);\
+					} while (0)
+
+bool backlight_dimmer = false;
+module_param(backlight_dimmer, bool, 0755);
+
 static struct fb_info *fbi_list[MAX_FBI_LIST];
 static int fbi_list_index;
 
@@ -465,10 +472,15 @@ static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 #endif
 	pr_debug("value(%d) -> bl_lvl(%d)\n", value, bl_lvl);
 #else
-	/* This maps android backlight level 0 to 255 into
-	   driver backlight level 0 to bl_max with rounding */
-	MDSS_BRIGHT_TO_BL(bl_lvl, value, mfd->panel_info->bl_max,
-				mfd->panel_info->brightness_max);
+	if (backlight_dimmer) {
+		MDSS_BRIGHT_TO_BL_DIMMER(bl_lvl, value);
+	} else {
+		/* This maps android backlight level 0 to 255 into
+		   driver backlight level 0 to bl_max with rounding */
+		MDSS_BRIGHT_TO_BL(bl_lvl, value, mfd->panel_info->bl_max,
+					mfd->panel_info->brightness_max);
+	}
+
 #endif
 	if (!bl_lvl && value)
 		bl_lvl = 1;
