@@ -1123,6 +1123,20 @@ static int msm_compr_open(struct snd_compr_stream *cstream)
     lgesoundmabl_lrbalancecontrol = 0xFF00FF00;
     lgesoundmabl_allparam = 0xFF00FF00;
 #endif
+	if (prtd->audio_client == NULL) {
+		pr_err("%s: Could not allocate memory for client\n", __func__);
+		kfree(pdata->audio_effects[rtd->dai_link->be_id]);
+		pdata->audio_effects[rtd->dai_link->be_id] = NULL;
+		kfree(pdata->dec_params[rtd->dai_link->be_id]);
+		pdata->cstream[rtd->dai_link->be_id] = NULL;
+		kfree(prtd);
+		runtime->private_data = NULL;
+		return -ENOMEM;
+	}
+	pr_debug("%s: session ID %d\n", __func__, prtd->audio_client->session);
+	prtd->audio_client->perf_mode = false;
+	prtd->session_id = prtd->audio_client->session;
+	pdata->is_in_use[rtd->dai_link->be_id] = true;
 
 	return 0;
 }
@@ -1221,6 +1235,50 @@ static int msm_compr_free(struct snd_compr_stream *cstream)
 	if (pdata->audio_effects[soc_prtd->dai_link->be_id] != NULL) {
 		kfree(pdata->audio_effects[soc_prtd->dai_link->be_id]);
 		pdata->audio_effects[soc_prtd->dai_link->be_id] = NULL;
+	}
+	if (pdata->dec_params[soc_prtd->dai_link->be_id] != NULL) {
+		kfree(pdata->dec_params[soc_prtd->dai_link->be_id]);
+		pdata->dec_params[soc_prtd->dai_link->be_id] = NULL;
+	}
+	pdata->is_in_use[soc_prtd->dai_link->be_id] = false;
+	kfree(prtd);
+	runtime->private_data = NULL;
+
+	return 0;
+}
+
+static int msm_compr_capture_free(struct snd_compr_stream *cstream)
+{
+	struct snd_compr_runtime *runtime;
+	struct msm_compr_audio *prtd;
+	struct snd_soc_pcm_runtime *soc_prtd;
+	struct msm_compr_pdata *pdata;
+	struct audio_client *ac;
+	int dir = OUT, stream_id;
+	unsigned long flags;
+	uint32_t stream_index;
+
+	if (!cstream) {
+		pr_err("%s cstream is null\n", __func__);
+		return 0;
+	}
+	runtime = cstream->runtime;
+	soc_prtd = cstream->private_data;
+	if (!runtime || !soc_prtd || !(soc_prtd->platform)) {
+		pr_err("%s runtime or soc_prtd or platform is null\n",
+			__func__);
+		return 0;
+	}
+	prtd = runtime->private_data;
+	if (!prtd) {
+		pr_err("%s prtd is null\n", __func__);
+		return 0;
+	}
+	pdata = snd_soc_platform_get_drvdata(soc_prtd->platform);
+	ac = prtd->audio_client;
+	if (!pdata || !ac) {
+		pr_err("%s pdata or ac is null\n", __func__);
+		return 0;
 	}
 	if (pdata->dec_params[soc_prtd->dai_link->be_id] != NULL) {
 		kfree(pdata->dec_params[soc_prtd->dai_link->be_id]);
