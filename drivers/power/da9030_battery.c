@@ -502,7 +502,7 @@ static int da9030_battery_probe(struct platform_device *pdev)
 
 	if (pdata->charge_milliamp >= 1500 ||
 	    pdata->charge_millivolt < 4000 ||
-	    pdata->charge_millivolt > 4350)
+	    pdata->charge_millivolt > 4500)
 		return -EINVAL;
 
 	charger = devm_kzalloc(&pdev->dev, sizeof(*charger), GFP_KERNEL);

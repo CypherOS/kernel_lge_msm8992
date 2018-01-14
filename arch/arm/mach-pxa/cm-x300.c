@@ -690,13 +690,13 @@ static void cm_x300_battery_critical(void)
 struct da9030_battery_info cm_x300_battery_info = {
 	.battery_info = &cm_x300_psy_info,
 
-	.charge_milliamp = 1000,
-	.charge_millivolt = 4200,
+	.charge_milliamp = 1500,
+	.charge_millivolt = 4500,
 
 	.vbat_low = 3600,
 	.vbat_crit = 3400,
 	.vbat_charge_start = 4100,
-	.vbat_charge_stop = 4200,
+	.vbat_charge_stop = 4500,
 	.vbat_charge_restart = 4000,
 
 	.vcharge_min = 3200,
