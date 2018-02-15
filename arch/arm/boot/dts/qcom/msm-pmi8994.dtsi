@@ -320,8 +320,6 @@
 			qcom,fg-iterm-ma = <100>;
 			qcom,fg-chg-iterm-ma = <100>;
 			qcom,cycle-counter-en;
-			qcom,cycle-counter-low-soc = <15>;
-			qcom,cycle-counter-high-soc = <85>;
 			qcom,capacity-learning-on;
 			qcom,fg-cc-cv-threshold-mv = <4340>;
 			qcom,pmic-revid = <&pmi8994_revid>;
@@ -640,16 +638,16 @@
 			qcom,headroom-sense-ch0-enabled;
 			qcom,headroom-sense-ch1-enabled;
 			qcom,power-detect-enabled;
+			qcom,duration = <1280>;
 
 			pmi8994_flash0: qcom,flash_0 {
 				label = "flash";
 				qcom,led-name = "led:flash_0";
 				qcom,default-led-trigger =
 						"flash0_trigger";
-				qcom,max-current = <1000>;
-				qcom,duration = <1280>;
 				qcom,id = <0>;
-				qcom,current = <625>;
+				qcom,current = <1000>;
+				qcom,max-current = <1000>;
 			};
 
 			pmi8994_flash1: qcom,flash_1 {
@@ -657,10 +655,9 @@
 				qcom,led-name = "led:flash_1";
 				qcom,default-led-trigger =
 						"flash1_trigger";
-				qcom,max-current = <1000>;
-				qcom,duration = <1280>;
 				qcom,id = <1>;
-				qcom,current = <625>;
+				qcom,current = <1000>;
+				qcom,max-current = <1000>;
 			};
 
 			pmi8994_torch0: qcom,torch_0 {
@@ -668,7 +665,6 @@
 				qcom,led-name = "led:torch_0";
 				qcom,default-led-trigger =
 						"torch0_trigger";
-				qcom,max-current = <200>;
 				qcom,id = <0>;
 				qcom,current = <120>;
 				reg0 {
@@ -679,6 +675,7 @@
 				reg1 {
 					regulator-name = "pon_spare_reg";
 				};
+				qcom,max-current = <200>;
 			};
 
 			pmi8994_torch1: qcom,torch_1 {
@@ -686,7 +683,6 @@
 				qcom,led-name = "led:torch_1";
 				qcom,default-led-trigger =
 						"torch1_trigger";
-				qcom,max-current = <200>;
 				qcom,id = <1>;
 				qcom,current = <120>;
 				reg0 {
@@ -697,7 +693,27 @@
 				reg1 {
 					regulator-name = "pon_spare_reg";
 				};
+				qcom,max-current = <200>;
 			};
+
+			pmi8994_switch: qcom,switch {
+				label = "switch";
+				qcom,led-name = "led:switch";
+				qcom,default-led-trigger =
+						"switch_trigger";
+				qcom,id = <2>;
+				qcom,current = <625>;
+				qcom,max-current = <1000>;
+				qcom,duration = <1280>;
+				reg0 {
+					regulator-name =
+						"pmi8994_boostbypass";
+					max-voltage = <3600000>;
+				};
+				reg1 {
+					regulator-name = "pon_spare_reg";
+				};
+                        };
 		};
 	};
 };

@@ -1119,9 +1119,10 @@
 
 	qcom,cnss {
 		compatible = "qcom,cnss";
-		wlan-bootstrap-gpio = <&msm_gpio 112 0>,
-				      <&msm_gpio 54 0>,
-				      <&msm_gpio 53 0>;
+		wlan-bootstrap-gpio = <&msm_gpio 111 0>,
+				      <&msm_gpio 112 0>,
+				      <&msm_gpio 0 0>,
+				      <&msm_gpio 1 0>;
 		wlan-en-gpio = <&msm_gpio 113 0>;
 		vdd-wlan-supply = <&wlan_vreg>;
 		vdd-wlan-io-supply = <&pm8994_s4>;
@@ -1766,7 +1767,6 @@
 		qcom,cpu-dma-latency-us = <301 70>;
 		qcom,cpu-affinity = "affine_cores";
 		qcom,cpu-affinity-mask = <0x0f 0xf0>;
-		qcom,wakeup-on-idle;
 
 		qcom,msm-bus,name = "sdhc1";
 		qcom,msm-bus,num-cases = <9>;
@@ -1806,7 +1806,6 @@
 		qcom,cpu-dma-latency-us = <301 70>;
 		qcom,cpu-affinity = "affine_cores";
 		qcom,cpu-affinity-mask = <0x0f 0xf0>;
-		qcom,wakeup-on-idle;
 
 		qcom,msm-bus,name = "sdhc2";
 		qcom,msm-bus,num-cases = <8>;
