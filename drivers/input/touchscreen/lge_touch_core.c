@@ -159,7 +159,7 @@ void send_uevent(struct device *dev, char *string[2])
  * during recognition or verification.
  */
 #define VALID_LPWG_UEVENT_SIZE 5
-static char *lpwg_uevent[VALID_LPWG_UEVENT_SIZE][2] = {
+static char *lpwg_uevent[VALID_LPWG_UEVENT_SIZE][3] = {
 	{"TOUCH_GESTURE_WAKEUP=WAKEUP", NULL},
 	{"TOUCH_GESTURE_WAKEUP=PASSWORD", NULL},
 	{"TOUCH_GESTURE_WAKEUP=SIGNATURE", NULL},
@@ -171,19 +171,9 @@ void send_uevent_lpwg(struct i2c_client *client, int type)
 {
 	struct lge_touch_data *ts = i2c_get_clientdata(client);
 
-	wake_lock_timeout(&ts->lpwg_wake_lock, msecs_to_jiffies(3000));
-
-	if (type > 0 && type <= VALID_LPWG_UEVENT_SIZE
-			&& atomic_read(&ts->state.uevent)
-			== UEVENT_IDLE) {
-		atomic_set(&ts->state.uevent, UEVENT_BUSY);
-		send_uevent(&client->dev, lpwg_uevent[type-1]);
-                atomic_set(&ts->state.uevent_state, UEVENT_IDLE);
-	}
+	wake_lock_timeout(&ts->lpwg_wake_lock, msecs_to_jiffies(500));
 
 	if (type == LPWG_DOUBLE_TAP) {
-		TOUCH_D(DEBUG_BASE_INFO || DEBUG_LPWG,
-			"LPWG report key KEY_WAKEUP\n");
 		input_report_key(ts->input_dev, KEY_WAKEUP, BUTTON_PRESSED);
 		input_sync(ts->input_dev);
 		input_report_key(ts->input_dev, KEY_WAKEUP, BUTTON_RELEASED);
