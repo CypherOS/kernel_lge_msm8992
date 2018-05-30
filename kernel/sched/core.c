@@ -2004,6 +2004,16 @@ static void reset_task_stats(struct task_struct *p)
 	p->ravg.sum_history[0] = sum;
 }
 
+static const struct cpumask *get_adjusted_cpumask(const struct task_struct *p,
+        const struct cpumask *req_mask)
+{
+        /* Force all performance-critical kthreads onto the big cluster */
+        if (p->flags & PF_PERF_CRITICAL)
+                return cpu_perf_mask;
+
+        return req_mask;
+}
+
 static inline void mark_task_starting(struct task_struct *p)
 {
 	struct rq *rq = task_rq(p);
@@ -6941,6 +6951,7 @@ void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask)
 
 	cpumask_copy(&p->cpus_allowed, new_mask);
 	p->nr_cpus_allowed = cpumask_weight(new_mask);
+	new_mask = get_adjusted_cpumask(p, new_mask);
 }
 
 /*
