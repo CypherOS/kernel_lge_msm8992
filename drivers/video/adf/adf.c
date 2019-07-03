@@ -561,7 +561,7 @@ int adf_device_init(struct adf_device *dev, struct device *parent,
 	INIT_LIST_HEAD(&dev->attached);
 	INIT_LIST_HEAD(&dev->attach_allowed);
 
-	dev->post_thread = kthread_run(kthread_worker_fn,
+	dev->post_thread = kthread_run_perf_critical(kthread_worker_fn,
 			&dev->post_worker, dev->base.name);
 	if (IS_ERR(dev->post_thread)) {
 		ret = PTR_ERR(dev->post_thread);
