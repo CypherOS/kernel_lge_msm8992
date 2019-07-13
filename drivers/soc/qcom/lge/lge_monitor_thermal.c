@@ -181,7 +181,8 @@ static void poll_monitor_work(struct work_struct *work)
 
 	/* Check again before scheduling */
 	if (enable)
-		queue_delayed_work(monitor_wq, &monitor_dd->monitor_work_struct, delay_time);
+		queue_delayed_work(system_power_efficient_wq,monitor_wq,
+		&monitor_dd->monitor_work_struct, delay_time);
 }
 
 static int lge_monitor_thermal_remove(struct platform_device *pdev)
@@ -210,8 +211,8 @@ static void init_monitor_work(struct work_struct *work)
 
 	delay_time = msecs_to_jiffies(monitor_dd->polling_time);
 
-	queue_delayed_work(monitor_wq,
-		&monitor_dd->monitor_work_struct, delay_time);
+	queue_delayed_work(system_power_efficient_wq,monitor_wq,
+	&monitor_dd->monitor_work_struct, delay_time);
 
 	error = device_create_file(monitor_dd->dev, &dev_attr_disable);
 	if (error)
@@ -290,7 +291,8 @@ static int lge_monitor_thermal_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, monitor_dd);
 	INIT_DELAYED_WORK(&monitor_dd->init_monitor_work_struct, init_monitor_work);
 	INIT_DELAYED_WORK(&monitor_dd->monitor_work_struct, poll_monitor_work);
-	queue_delayed_work(monitor_wq, &monitor_dd->init_monitor_work_struct, 0);
+	queue_delayed_work(system_power_efficient_wq,monitor_wq,
+	&monitor_dd->init_monitor_work_struct, 0);
 #ifdef CONFIG_LGE_PM_THERM_VS
 #ifndef CONFIG_MACH_MSM8992_SJR
 	vs_therm = monitor_dd;
