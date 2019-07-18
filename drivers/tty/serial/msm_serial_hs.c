@@ -66,6 +66,10 @@
 #include <linux/platform_data/msm_serial_hs.h>
 #include <linux/msm-bus.h>
 
+#ifdef CONFIG_BT_MSM_SLEEP
+#include <net/bluetooth/bluesleep.h>
+#endif
+
 #include "msm_serial_hs_hwreg.h"
 #define UART_SPS_CONS_PERIPHERAL 0
 #define UART_SPS_PROD_PERIPHERAL 1
@@ -296,6 +300,9 @@ static int msm_hs_ioctl(struct uart_port *uport, unsigned int cmd,
 
 	switch (cmd) {
 	case MSM_ENABLE_UART_CLOCK: {
+		#ifdef CONFIG_BT_MSM_SLEEP
+			bluesleep_outgoing_data();
+		#endif
 		MSM_HS_INFO("%s():ENABLE UART CLOCK: cmd=%d, ioc %d\n",
 			__func__, cmd, ioctl_count);
 		atomic_inc(&msm_uport->ioctl_count);
@@ -303,6 +310,9 @@ static int msm_hs_ioctl(struct uart_port *uport, unsigned int cmd,
 		break;
 	}
 	case MSM_DISABLE_UART_CLOCK: {
+		#ifdef CONFIG_BT_MSM_SLEEP
+			bluesleep_tx_allow_sleep();
+		#endif
 		MSM_HS_INFO("%s():DISABLE UART CLOCK: cmd=%d ioc %d\n",
 			__func__, cmd, ioctl_count);
 		if (ioctl_count <= 0) {
