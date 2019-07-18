@@ -31,6 +31,10 @@
 #include "bluetooth_pm.h"
 //[E] Bluetooth Bring-up
 
+#ifdef CONFIG_BT_MSM_SLEEP
+#include <net/bluetooth/bluesleep.h>
+#endif
+
 #undef BT_INFO
 #define BT_INFO(fmt, arg...) printk(KERN_ERR "*[bluetooth-pm(%d)-%s()] " fmt "\n" , __LINE__, __FUNCTION__, ## arg)
 #undef BT_ERR
@@ -405,6 +409,9 @@ static void bluetooth_pm_tx_timer_expire(unsigned long data)
     clear_bit(BT_TXDATA,&flags);
 
     gpio_set_value(bsi->ext_wake, 1);
+    #ifdef CONFIG_BT_MSM_SLEEP
+		bluesleep_start(true);
+    #endif
 
     //printk("%s, Call bluetooth_pm_tx_idle\n", __func__);
 
@@ -619,6 +626,9 @@ void bluetooth_pm_outgoing_data(void)
 
         set_bit(BT_TXDATA, &flags);
         gpio_set_value(bsi->ext_wake, 0);
+        #ifdef CONFIG_BT_MSM_SLEEP
+		bluesleep_stop();
+        #endif
 
         bluetooth_pm_tx_busy();
     }
@@ -1210,6 +1220,9 @@ static int bluetooth_pm_remove(struct platform_device *pdev)
 {
     /* assert bt wake */
     gpio_set_value(bsi->ext_wake, 0);
+    #ifdef CONFIG_BT_MSM_SLEEP
+		bluesleep_stop();
+    #endif
     if (test_bit(BT_PROTO, &flags)) {
         if (disable_irq_wake(bsi->host_wake_irq))
             printk("%s, Couldn't disable hostwake IRQ wakeup mode \n", __func__);

@@ -49,6 +49,10 @@
 #include <linux/platform_data/msm_serial_hs.h>
 #endif
 
+#ifdef CONFIG_BT_MSM_SLEEP
+#include <net/bluetooth/bluesleep.h>
+#endif
+
 static int enableuartsleep = 1;
 module_param(enableuartsleep, int, 0644);
 MODULE_PARM_DESC(enableuartsleep, "Enable Atheros Sleep Protocol");
@@ -147,8 +151,14 @@ static int ath_wakeup_ar3k(void)
 		hsuart_serial_clock_on(bsi->uport);
 		BT_DBG("wakeup device\n");
 		gpio_set_value(bsi->ext_wake, 0);
+		#ifdef CONFIG_BT_MSM_SLEEP
+			bluesleep_stop();
+		#endif
 		msleep(20);
 		gpio_set_value(bsi->ext_wake, 1);
+		#ifdef CONFIG_BT_MSM_SLEEP
+			bluesleep_start(true);
+		#endif
 	}
 	if (!is_lpm_enabled)
 		modify_timer_task();
@@ -236,6 +246,9 @@ static int ath_bluesleep_gpio_config(int on)
 	}
 
 	gpio_set_value(bsi->ext_wake, 1);
+	#ifdef CONFIG_BT_MSM_SLEEP
+		bluesleep_start(true);
+	#endif
 
 	/* Initialize spinlock. */
 	spin_lock_init(&rw_lock);

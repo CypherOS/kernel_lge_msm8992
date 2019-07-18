@@ -29,6 +29,10 @@
 #include <net/cnss.h>
 #include <linux/platform_data/msm_serial_hs.h>
 
+#ifdef CONFIG_BT_MSM_SLEEP
+#include <net/bluetooth/bluesleep.h>
+#endif
+
 #define BT_PWR_DBG(fmt, arg...)  pr_debug("%s: " fmt "\n" , __func__ , ## arg)
 #define BT_PWR_INFO(fmt, arg...) pr_info("%s: " fmt "\n" , __func__ , ## arg)
 #define BT_PWR_ERR(fmt, arg...)  pr_err("%s: " fmt "\n" , __func__ , ## arg)
@@ -181,6 +185,9 @@ static int bt_configure_gpios(int on)
 		msleep(50);
 	} else {
 		gpio_set_value(bt_reset_gpio, 0);
+		#ifdef CONFIG_BT_MSM_SLEEP
+			bluesleep_stop();
+		#endif
 		msleep(100);
 	}
 	return rc;
