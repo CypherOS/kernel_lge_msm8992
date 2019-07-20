@@ -714,7 +714,7 @@ static int qpnp_hap_vmax_config(struct qpnp_hap *hap)
 	if (rc < 0)
 		return rc;
 	reg &= QPNP_HAP_VMAX_MASK;
-	temp = hap->vmax_mv_strong / QPNP_HAP_VMAX_MIN_MV;
+	temp = hap->vmax_mv_strong / QPNP_HAP_VMAX_MAX_MV;
 	reg |= (temp << QPNP_HAP_VMAX_SHIFT);
 	rc = qpnp_hap_write_reg(hap, &reg, QPNP_HAP_VMAX_REG(hap->base));
 	if (rc)
