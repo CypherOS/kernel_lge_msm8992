@@ -1290,8 +1290,9 @@ static void qpnp_flash_led_brightness_set(struct led_classdev *led_cdev,
 	flash_node = container_of(led_cdev, struct flash_node_data, cdev);
 	led = dev_get_drvdata(&flash_node->spmi_dev->dev);
 
-	if (value < LED_OFF) {
-		pr_err("Invalid brightness value\n");
+	if (value <= LED_OFF) {
+		value = flash_node->LED_OFF
+		mutex_unlock(&led->flash_led_lock);
 		return;
 	}
 
