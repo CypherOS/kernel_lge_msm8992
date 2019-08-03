@@ -618,6 +618,7 @@ struct ipa_rt_rule {
 	uint32_t hdr_hdl;
 	uint32_t hdr_proc_ctx_hdl;
 	struct ipa_rule_attrib attrib;
+	uint8_t hashable;
 };
 
 /**
